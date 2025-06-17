@@ -1,4 +1,3 @@
-# create ui/ux here using streamlit
 import streamlit as st
 import os
 import json
@@ -7,78 +6,85 @@ import subprocess
 import matplotlib.pyplot as plt
 import statistics
 
-# Set UI configs
-st.set_page_config("NLMT 5G Test Dashboard", layout="wide")
-st.title("📡 NLMT - 5G Network Test Interface")
-st.markdown("This interface lets you run latency, jitter, and packet loss tests using NLMT.")
+st.set_page_config("📡 NLMT 5G Test Automation Dashboard", layout="wide")
+st.title("📡 NLMT - 5G Network Test Automation Interface")
+st.markdown("An all-in-one interface to run and analyze latency, jitter, and packet loss using **NLMT** on the 5G commercial setup.")
 
-# Sidebar for test inputs
-st.sidebar.header("🧪 Configure Test")
-
-test_type = st.sidebar.selectbox("Select Test Type", ["Latency", "Jitter", "Packet Loss"])
+# Sidebar configuration
+st.sidebar.header("🛠️ Configure Your Test")
+test_type = st.sidebar.selectbox("Select Test Type", ["Latency", "Jitter", "Packet Loss", "All"])
 target_hosts = st.sidebar.text_input("Target Hosts (comma-separated)", "google.com,cloudflare.com")
 duration = st.sidebar.text_input("Duration (e.g., 60s)", "60s")
 interval = st.sidebar.text_input("Interval (e.g., 100ms)", "100ms")
-output_format = st.sidebar.selectbox("Output Format", ["json"])
 
-run_button = st.sidebar.button("▶️ Run Test")
+run_test = st.sidebar.button("▶️ Run Test")
 
-# Output folder setup
+# Ensure output directory exists
 os.makedirs("nlmt_outputs", exist_ok=True)
 
-def run_nlmt(hosts, dur, inter, fmt):
+def run_nlmt(hosts, dur, inter):
     output_files = []
     for host in hosts:
         host_clean = host.strip()
         timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        out_file = f"nlmt_outputs/{host_clean}_{timestamp}.{fmt}"
-        cmd = [
-            "./bin/nlmt", "-t", dur, "-i", inter,
-            "-j" if fmt == "json" else "-c", host_clean,
-            "-o", out_file
-        ]
-        st.code(" ".join(cmd))
+        out_file = f"nlmt_outputs/{host_clean}_{timestamp}.json"
+        cmd = ["./bin/nlmt", "-t", dur, "-i", inter, "-j", host_clean, "-o", out_file]
+        st.code("Running: " + " ".join(cmd))
         subprocess.run(cmd)
         output_files.append(out_file)
     return output_files
 
-def plot_graph(data):
-    latencies = [m["latency_ms"] for m in data["measurements"]]
-    timestamps = [m["timestamp"] for m in data["measurements"]]
+def analyze_and_plot(data, host):
+    st.subheader(f"📊 Results for `{host}`")
+    measurements = data.get("measurements", [])
+    if not measurements:
+        st.warning("No data to analyze.")
+        return
 
+    latencies = [m.get("latency_ms", 0) for m in measurements]
+    timestamps = [m.get("timestamp") for m in measurements]
+
+    # Plot graph
     fig, ax = plt.subplots()
-    ax.plot(timestamps, latencies, color='blue', marker='o')
+    ax.plot(timestamps, latencies, marker='o', color='dodgerblue')
     ax.set_title("📈 Latency Over Time")
     ax.set_xlabel("Time")
     ax.set_ylabel("Latency (ms)")
     st.pyplot(fig)
 
+    # Show summary
     if latencies:
-        st.subheader("📊 Summary Stats")
+        st.markdown("#### 📋 Summary")
         st.write({
-            "Min (ms)": min(latencies),
-            "Max (ms)": max(latencies),
-            "Avg (ms)": round(statistics.mean(latencies), 2),
-            "Jitter (std dev)": round(statistics.stdev(latencies), 2) if len(latencies) > 1 else 0
+            "Min Latency (ms)": round(min(latencies), 2),
+            "Max Latency (ms)": round(max(latencies), 2),
+            "Average Latency (ms)": round(statistics.mean(latencies), 2),
+            "Jitter (std dev)": round(statistics.stdev(latencies), 2) if len(latencies) > 1 else 0,
+            "Total Packets": len(latencies)
         })
 
-# Run and show results
-if run_button:
+# Run selected tests
+if run_test:
+    st.info("Test started...")
     hosts = [h.strip() for h in target_hosts.split(",")]
-    st.info("Running tests...")
-    files = run_nlmt(hosts, duration, interval, output_format)
-    st.success("Test Completed ✅")
+    files = run_nlmt(hosts, duration, interval)
+    st.success("✅ Test completed!")
 
     for file in files:
-        st.markdown(f"### 📁 Output: {file}")
-        with open(file, 'r') as f:
-            data = json.load(f)
-        plot_graph(data)
+        host_name = os.path.basename(file).split("_")[0]
+        st.markdown(f"### 📁 Output: `{file}`")
+        with open(file, "r") as f:
+            result_data = json.load(f)
+            analyze_and_plot(result_data, host_name)
 
-# Upload section
-st.markdown("## 📤 Or Upload NLMT JSON Result")
-uploaded = st.file_uploader("Upload result file", type=["json"])
-if uploaded:
-    data = json.load(uploaded)
-    st.json(data)
-    plot_graph(data)
+# Upload previous result
+st.markdown("---")
+st.markdown("## 📤 Upload NLMT Result (JSON)")
+uploaded_file = st.file_uploader("Upload `.json` result", type=["json"])
+if uploaded_file:
+    try:
+        data = json.load(uploaded_file)
+        host_name = uploaded_file.name.split("_")[0]
+        analyze_and_plot(data, host_name)
+    except Exception as e:
+        st.error(f"Error loading file: {e}")
