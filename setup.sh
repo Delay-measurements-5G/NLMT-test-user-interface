@@ -1,22 +1,32 @@
-set -e  # Stop on error
+#!/bin/bash
+set -e
 
 echo "📁 Creating 'nmat' folder..."
 mkdir -p nmat
 cd nmat
 
 echo "📦 Installing system dependencies..."
-sudo apt update && sudo apt install git python3-venv -y
+sudo apt update && sudo apt install -y git python3-venv python3-pip
 
 echo "🐍 Creating Python virtual environment in ./nlmt_env ..."
 python3 -m venv nlmt_env
+
+echo "🧪 Activating virtual environment..."
 source nlmt_env/bin/activate
 
 echo "📥 Cloning NLMT repository into ./nmat/nlmt ..."
 git clone https://github.com/samiemostafavi/nlmt.git
 
-echo "🔧 Installing NLMT from source..."
 cd nlmt
-pip install .
+
+echo "🔍 Checking for installable Python package..."
+if [ -f "setup.py" ] || [ -f "pyproject.toml" ]; then
+    echo "📦 Installing NLMT with pip..."
+    pip install --upgrade pip setuptools
+    pip install .
+else
+    echo "⚠️  No setup.py or pyproject.toml found. Skipping pip install."
+fi
 cd ..
 
 echo "📜 Installing requirements.txt if available..."
@@ -28,4 +38,7 @@ else
 fi
 
 echo "✅ Installation complete."
-echo "👉 To run: source nmat/nlmt_env/bin/activate && streamlit run main_ui.py"
+echo ""
+echo "👉 To run the app:"
+echo "   source nmat/nlmt_env/bin/activate"
+echo "   streamlit run nlmt/main_ui.py"
