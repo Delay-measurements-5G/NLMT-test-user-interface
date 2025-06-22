@@ -8,76 +8,86 @@ import statistics
 
 st.set_page_config("📡 NLMT 5G Test Automation Dashboard", layout="wide")
 st.title("📡 NLMT - 5G Network Test Automation Interface")
-st.markdown("An all-in-one interface to run and analyze latency, jitter, and packet loss using **NLMT** on the 5G commercial setup.")
+st.markdown("An all-in-one interface to run and analyze delay, jitter, and packet loss using **NLMT** on the 5G commercial setup.")
 
 # Sidebar configuration
 st.sidebar.header("🛠️ Configure Your Test")
-test_type = st.sidebar.selectbox("Select Test Type", ["Latency", "Jitter", "Packet Loss", "All"])
-target_hosts = st.sidebar.text_input("Target Hosts (comma-separated)", "google.com,cloudflare.com")
-duration = st.sidebar.text_input("Duration (e.g., 60s)", "60s")
-interval = st.sidebar.text_input("Interval (e.g., 100ms)", "100ms")
-
+target_hosts = st.sidebar.text_input("Target Host (e.g., 0.0.0.0:2112)", "0.0.0.0:2112")
+duration = st.sidebar.text_input("Test Duration (e.g., 6s)", "6s")
+interval = st.sidebar.text_input("Send Interval (e.g., 100ms)", "100ms")
+packet_size = st.sidebar.text_input("Packet Size (bytes)", "100")
+output_file = st.sidebar.text_input("Output Filename (e.g., result.json)", "result.json")
 run_test = st.sidebar.button("▶️ Run Test")
 
 # Ensure output directory exists
-os.makedirs("nlmt_outputs", exist_ok=True)
+os.makedirs("output", exist_ok=True)
 
-def run_nlmt(hosts, dur, inter):
-    output_files = []
+def run_nlmt(hosts, dur, inter, size, out_file):
     for host in hosts:
         host_clean = host.strip()
-        timestamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        out_file = f"nlmt_outputs/{host_clean}_{timestamp}.json"
-        cmd = ["./bin/nlmt", "-t", dur, "-i", inter, "-j", host_clean, "-o", out_file]
+        cmd = [
+            "./script.sh",
+            host_clean,
+            dur,
+            inter,
+            size,
+            out_file
+        ]
         st.code("Running: " + " ".join(cmd))
-        subprocess.run(cmd)
-        output_files.append(out_file)
-    return output_files
+        try:
+            subprocess.run(cmd, check=True)
+        except subprocess.CalledProcessError as e:
+            st.error(f"Test for {host_clean} failed: {e}")
 
 def analyze_and_plot(data, host):
     st.subheader(f"📊 Results for `{host}`")
-    measurements = data.get("measurements", [])
-    if not measurements:
-        st.warning("No data to analyze.")
+
+    round_trips = data.get("round_trips", [])
+    if not round_trips:
+        st.warning("No data found in `round_trips`.")
         return
 
-    latencies = [m.get("latency_ms", 0) for m in measurements]
-    timestamps = [m.get("timestamp") for m in measurements]
+    # Extract RTT delay in milliseconds
+    delays_ms = [entry["delay"]["rtt"] / 1e6 for entry in round_trips if "delay" in entry and entry["delay"].get("rtt") is not None]
+    seqnos = [entry["seqno"] for entry in round_trips if "delay" in entry and entry["delay"].get("rtt") is not None]
 
-    # Plot graph
+    if not delays_ms:
+        st.warning("No valid RTT delays found in data.")
+        return
+
+    # Plot RTT delay graph
     fig, ax = plt.subplots()
-    ax.plot(timestamps, latencies, marker='o', color='dodgerblue')
-    ax.set_title("📈 Latency Over Time")
-    ax.set_xlabel("Time")
-    ax.set_ylabel("Latency (ms)")
+    ax.plot(seqnos, delays_ms, marker='o', color='mediumseagreen')
+    ax.set_title("📈 Round-Trip Delay Over Sequence Number")
+    ax.set_xlabel("Packet Sequence Number")
+    ax.set_ylabel("RTT Delay (ms)")
     st.pyplot(fig)
 
-    # Show summary
-    if latencies:
-        st.markdown("#### 📋 Summary")
-        st.write({
-            "Min Latency (ms)": round(min(latencies), 2),
-            "Max Latency (ms)": round(max(latencies), 2),
-            "Average Latency (ms)": round(statistics.mean(latencies), 2),
-            "Jitter (std dev)": round(statistics.stdev(latencies), 2) if len(latencies) > 1 else 0,
-            "Total Packets": len(latencies)
-        })
+    # Show statistical summary
+    st.markdown("#### 📋 Summary")
+    st.write({
+        "Min RTT (ms)": round(min(delays_ms), 2),
+        "Max RTT (ms)": round(max(delays_ms), 2),
+        "Average RTT (ms)": round(statistics.mean(delays_ms), 2),
+        "Jitter (std dev, ms)": round(statistics.stdev(delays_ms), 2) if len(delays_ms) > 1 else 0,
+        "Total Packets": len(delays_ms)
+    })
 
-# Run selected tests
+# Run test
 if run_test:
     st.info("Test started...")
     hosts = [h.strip() for h in target_hosts.split(",")]
-    files = run_nlmt(hosts, duration, interval)
+    run_nlmt(hosts, duration, interval, packet_size, output_file)
     st.success("✅ Test completed!")
 
-    for file in files:
-        host_name = os.path.basename(file).split("_")[0]
-        st.markdown(f"### 📁 Output: `{file}`")
-        with open(file, "r") as f:
+    try:
+        with open(f"output/{output_file}", "r") as f:
             result_data = json.load(f)
-            analyze_and_plot(result_data, host_name)
+            analyze_and_plot(result_data, hosts[0])
+    except Exception as e:
+        st.error(f"Error reading result file: {e}")
 
-# Upload previous result
+# Upload past result
 st.markdown("---")
 st.markdown("## 📤 Upload NLMT Result (JSON)")
 uploaded_file = st.file_uploader("Upload `.json` result", type=["json"])
@@ -88,3 +98,4 @@ if uploaded_file:
         analyze_and_plot(data, host_name)
     except Exception as e:
         st.error(f"Error loading file: {e}")
+
