@@ -98,4 +98,3 @@ if uploaded_file:
         analyze_and_plot(data, host_name)
     except Exception as e:
         st.error(f"Error loading file: {e}")
-

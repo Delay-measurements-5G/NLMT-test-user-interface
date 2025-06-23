@@ -37,4 +37,3 @@ fi
 
 # Deactivate environment
 deactivate
-
