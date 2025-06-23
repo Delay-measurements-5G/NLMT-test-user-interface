@@ -16,14 +16,21 @@ mode = st.sidebar.radio("Select Test Mode", ["NLMT", "iPerf"])
 st.sidebar.markdown("### 🌐 General Test Parameters")
 target_hosts = st.sidebar.text_input("Target Host (e.g., 0.0.0.0:2112)", "0.0.0.0:2112")
 duration = st.sidebar.text_input("Test Duration (e.g., 6s or 10)", "6s")
-interval = st.sidebar.text_input("Send Interval (e.g., 100ms)", "100ms")
-packet_size = st.sidebar.text_input("Packet Size (bytes)", "100")
+
+# Only show packet size & interval in NLMT mode
+if mode == "NLMT":
+    interval = st.sidebar.text_input("Send Interval (e.g., 100ms)", "100ms")
+    packet_size = st.sidebar.text_input("Packet Size (bytes)", "100")
+else:
+    interval = None
+    packet_size = None
+
 output_file = st.sidebar.text_input("Output Filename (e.g., result.json)", "result.json")
 
 # Ensure output directory exists
 os.makedirs("output", exist_ok=True)
 
-# ----------------------------- NLMT MODE ----------------------------- #
+# --------------------------- NLMT MODE --------------------------- #
 if mode == "NLMT":
     st.sidebar.header("🛠️ NLMT Controls")
     run_test = st.sidebar.button("▶️ Run NLMT Client Test")
@@ -94,7 +101,6 @@ if mode == "NLMT":
         st.info("🖥️ Starting NLMT server...")
         run_nlmt_server()
 
-    # Upload section for NLMT
     st.markdown("---")
     st.markdown("## 📤 Upload NLMT Result (JSON)")
     uploaded_file = st.file_uploader("Upload `.json` result", type=["json"])
@@ -106,39 +112,118 @@ if mode == "NLMT":
         except Exception as e:
             st.error(f"Error loading file: {e}")
 
-# ----------------------------- iPerf MODE ----------------------------- #
+# --------------------------- iPerf MODE --------------------------- #
 else:
     st.sidebar.header("⚙️ iPerf Controls")
     use_udp = st.sidebar.checkbox("Use UDP", False)
+    use_reverse = st.sidebar.checkbox("Enable Reverse Mode", False)
     run_iperf_client = st.sidebar.button("▶️ Run iPerf Client")
     run_iperf_server = st.sidebar.button("🖥️ Start iPerf Server")
 
-    def run_iperf(server_ip, duration, udp=False):
-        cmd = ["iperf3", "-c", server_ip, "-t", duration]
-        if udp:
-            cmd.append("-u")
-        st.code("Running: " + " ".join(cmd))
-        try:
-            result = subprocess.run(cmd, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            st.success("✅ iPerf client test completed!")
-            st.text_area("📄 Raw Output", result.stdout, height=300)
-        except subprocess.CalledProcessError as e:
-            st.error(f"❌ iPerf client failed: {e.stderr}")
+    bandwidth = st.sidebar.text_input("Bandwidth (e.g., 10M)", "10M") if use_udp else None
 
-    def start_iperf_server():
-        cmd = ["iperf3", "-s"]
+    def analyze_iperf_json(file_path):
+        if not os.path.exists(file_path):
+            st.warning("⚠️ iPerf output file not found for analysis.")
+            return
+
+        try:
+            with open(file_path, "r") as f:
+                data = json.load(f)
+        except Exception as e:
+            st.error(f"Error reading iPerf JSON output: {e}")
+            return
+
+        intervals = data.get("intervals")
+        if intervals is None:
+            intervals = data.get("end", {}).get("streams", [])
+            if not intervals:
+                st.warning("No valid throughput data found in JSON.")
+                return
+
+        seq_numbers = []
+        throughputs = []
+
+        if isinstance(intervals, list) and "streams" in intervals[0]:
+            for i, interval in enumerate(intervals):
+                total_bps = sum(stream.get("bits_per_second", 0) for stream in interval["streams"])
+                seq_numbers.append(i + 1)
+                throughputs.append(total_bps / 1e6)
+        elif isinstance(intervals, list):
+            for i, stream in enumerate(intervals):
+                bps = stream.get("bits_per_second", 0)
+                seq_numbers.append(i + 1)
+                throughputs.append(bps / 1e6)
+
+        if not throughputs:
+            st.warning("No throughput data found.")
+            return
+
+        fig, ax = plt.subplots()
+        ax.plot(seq_numbers, throughputs, marker='o', color='dodgerblue')
+        ax.set_title("📈 iPerf Throughput Over Time Intervals")
+        ax.set_xlabel("Sequence Number (Interval)")
+        ax.set_ylabel("Throughput (Mbps)")
+        st.pyplot(fig)
+
+        st.markdown("#### 📋 Throughput Summary")
+        st.write({
+            "Min Throughput (Mbps)": round(min(throughputs), 2),
+            "Max Throughput (Mbps)": round(max(throughputs), 2),
+            "Average Throughput (Mbps)": round(statistics.mean(throughputs), 2),
+            "Std Dev Throughput (Mbps)": round(statistics.stdev(throughputs), 2) if len(throughputs) > 1 else 0,
+            "Total Intervals": len(throughputs),
+        })
+
+    def run_iperf_script_client():
+        cmd = ["./script.sh"]
+        host = target_hosts.strip()
+        dur = duration.strip()
+        out_file = output_file.strip()
+
+        if use_udp and use_reverse:
+            cmd += ["iperf_client_udp_reverse", host, dur, bandwidth, out_file]
+        elif use_udp:
+            cmd += ["iperf_client_udp", host, dur, bandwidth, out_file]
+        elif use_reverse:
+            cmd += ["iperf_client_reverse", host, dur, out_file]
+        else:
+            cmd += ["iperf_client", host, dur, out_file]
+
+        st.code("Running: " + " ".join(cmd))
+
+        try:
+            subprocess.run(cmd, check=True)
+            st.success("✅ iPerf client test completed!")
+            analyze_iperf_json(os.path.join("output", out_file))
+        except subprocess.CalledProcessError as e:
+            st.error(f"❌ iPerf client failed:\n{e}")
+
+    def run_iperf_script_server():
+        cmd = ["./script.sh", "iperf_server"]
         st.code("Running: " + " ".join(cmd))
         try:
-            subprocess.Popen(cmd)  # run in background
-            st.success("✅ iPerf server started!")
-        except Exception as e:
-            st.error(f"❌ Failed to start iPerf server: {e}")
+            subprocess.run(cmd, check=True)
+            st.success("✅ iPerf server started successfully!")
+        except subprocess.CalledProcessError as e:
+            st.error(f"❌ Failed to start iPerf server:\n{e}")
 
     if run_iperf_client:
-        st.info("🚀 Running iPerf client test...")
-        run_iperf(target_hosts.strip(), duration.strip(), use_udp)
+        st.info("🚀 Starting iPerf client test via script...")
+        run_iperf_script_client()
 
     if run_iperf_server:
-        st.info("🖥️ Starting iPerf server...")
-        start_iperf_server()
+        st.info("🖥️ Starting iPerf server via script...")
+        run_iperf_script_server()
+
+    st.markdown("---")
+    st.markdown("## 📤 Upload iPerf Result (JSON)")
+    uploaded_iperf_file = st.file_uploader("Upload iPerf `.json` result", type=["json"])
+    if uploaded_iperf_file:
+        try:
+            with open(os.path.join("output", uploaded_iperf_file.name), "wb") as f:
+                f.write(uploaded_iperf_file.read())
+            analyze_iperf_json(os.path.join("output", uploaded_iperf_file.name))
+        except Exception as e:
+            st.error(f"Error loading file: {e}")
 
