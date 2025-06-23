@@ -1,0 +1,574 @@
+{
+    "version": {
+        "nlmt": "0.10.3",
+        "protocol": 1,
+        "json_format": 1
+    },
+    "system_info": {
+        "os": "linux",
+        "cpus": 16,
+        "go_version": "go1.20.5",
+        "hostname": "chirag-bansal-Nitro-AN515-58"
+    },
+    "config": {
+        "local_address": "127.0.0.1:43613",
+        "remote_address": "127.0.0.1:2112",
+        "open_timeouts": "1s,2s,4s,8s",
+        "params": {
+            "proto_version": 1,
+            "duration": 1000000000,
+            "interval": 100000000,
+            "interval_offset": -1000000000,
+            "length": 100,
+            "multiply": 1,
+            "received_stats": "both",
+            "stamp_at": "both",
+            "trip_mode": "round",
+            "group": "",
+            "clock": "both",
+            "dscp": 0,
+            "server_fill": ""
+        },
+        "loose": false,
+        "ip_version": "IPv4",
+        "df": 0,
+        "ttl": 0,
+        "timer": "comp",
+        "time_source": "go",
+        "frame_source": "none",
+        "frame_duration": 0,
+        "interval_frames": 1,
+        "duration_frames": 2000,
+        "waiter": "3x4s",
+        "filler": "none",
+        "fill_one": false,
+        "server_fill": "",
+        "thread_lock": false,
+        "supplied": {
+            "local_address": ":0",
+            "remote_address": "0.0.0.0:2112",
+            "open_timeouts": "1s,2s,4s,8s",
+            "params": {
+                "proto_version": 1,
+                "duration": 1000000000,
+                "interval": 100000000,
+                "interval_offset": -1000000000,
+                "length": 100,
+                "multiply": 1,
+                "received_stats": "both",
+                "stamp_at": "both",
+                "trip_mode": "round",
+                "group": "",
+                "clock": "both",
+                "dscp": 0,
+                "server_fill": ""
+            },
+            "loose": false,
+            "ip_version": "IPv4+6",
+            "df": 0,
+            "ttl": 0,
+            "timer": "comp",
+            "time_source": "go",
+            "frame_source": "none",
+            "frame_duration": 0,
+            "interval_frames": 1,
+            "duration_frames": 2000,
+            "waiter": "3x4s",
+            "filler": "none",
+            "fill_one": false,
+            "server_fill": "",
+            "thread_lock": false
+        }
+    },
+    "stats": {
+        "start_time": {
+            "wall": 1750698228807227991,
+            "monotonic": 420541
+        },
+        "send_call": {
+            "total": 674190,
+            "n": 10,
+            "min": 11105,
+            "max": 108886,
+            "mean": 67419,
+            "stddev": 29543,
+            "variance": 872807809
+        },
+        "timer_error": {
+            "total": 2744366,
+            "n": 9,
+            "min": 34526,
+            "max": 556265,
+            "mean": 304929,
+            "stddev": 183524,
+            "variance": 33681092325
+        },
+        "rtt": {
+            "total": 2781830,
+            "n": 10,
+            "min": 87802,
+            "max": 415016,
+            "mean": 278183,
+            "median": 275385,
+            "stddev": 83018,
+            "variance": 6892121730
+        },
+        "send_delay": {
+            "total": 1613982,
+            "n": 10,
+            "min": 62586,
+            "max": 238690,
+            "mean": 161398,
+            "median": 160380,
+            "stddev": 46825,
+            "variance": 2192631508
+        },
+        "receive_delay": {
+            "total": 1167142,
+            "n": 10,
+            "min": 25192,
+            "max": 176237,
+            "mean": 116714,
+            "median": 119311,
+            "stddev": 40470,
+            "variance": 1637864925
+        },
+        "server_packets_received": 10,
+        "bytes_sent": 1000,
+        "bytes_received": 1000,
+        "duplicates": 0,
+        "late_packets": 0,
+        "wait": 1245048,
+        "duration": 902185142,
+        "packets_sent": 10,
+        "packets_received": 10,
+        "packet_loss_percent": 0,
+        "upstream_loss_percent": 0,
+        "downstream_loss_percent": 0,
+        "duplicate_percent": 0,
+        "late_packets_percent": 0,
+        "ipdv_send": {
+            "total": 356842,
+            "n": 9,
+            "min": 2782,
+            "max": 96190,
+            "mean": 39649,
+            "median": 25407,
+            "stddev": 37590,
+            "variance": 1413019610
+        },
+        "ipdv_receive": {
+            "total": 393557,
+            "n": 9,
+            "min": 13287,
+            "max": 131512,
+            "mean": 43728,
+            "median": 30056,
+            "stddev": 37101,
+            "variance": 1376506364
+        },
+        "ipdv_round_trip": {
+            "total": 669253,
+            "n": 9,
+            "min": 8491,
+            "max": 227702,
+            "mean": 74361,
+            "median": 35873,
+            "stddev": 72070,
+            "variance": 5194122848
+        },
+        "server_processing_time": {
+            "total": 109348,
+            "n": 10,
+            "min": 2750,
+            "max": 14981,
+            "mean": 10934,
+            "stddev": 3211,
+            "variance": 10316047
+        },
+        "timer_err_percent": 0.304929,
+        "timer_misses": 0,
+        "timer_miss_percent": 0,
+        "send_rate": {
+            "bps": 8892,
+            "string": "8.9 Kbps"
+        },
+        "receive_rate": {
+            "bps": 8891,
+            "string": "8.9 Kbps"
+        }
+    },
+    "round_trips": [
+        {
+            "seqno": 0,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698228807318933,
+                        "monotonic": 511493
+                    },
+                    "send": {
+                        "wall": 1750698228807228393,
+                        "monotonic": 420941
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698228807290979,
+                        "monotonic": 39229797227
+                    },
+                    "send": {
+                        "wall": 1750698228807293741,
+                        "monotonic": 39229799977
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 25192,
+                "rtt": 87802,
+                "send": 62586
+            },
+            "ipdv": {}
+        },
+        {
+            "seqno": 1,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698228908081083,
+                        "monotonic": 101273734
+                    },
+                    "send": {
+                        "wall": 1750698228907754729,
+                        "monotonic": 100947337
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698228907913475,
+                        "monotonic": 39330419813
+                    },
+                    "send": {
+                        "wall": 1750698228907924412,
+                        "monotonic": 39330430706
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 156671,
+                "rtt": 315504,
+                "send": 158746
+            },
+            "ipdv": {
+                "receive": 131512,
+                "rtt": 227702,
+                "send": 96190
+            }
+        },
+        {
+            "seqno": 2,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229007847338,
+                        "monotonic": 201039985
+                    },
+                    "send": {
+                        "wall": 1750698229007556179,
+                        "monotonic": 200748784
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229007709105,
+                        "monotonic": 39430215443
+                    },
+                    "send": {
+                        "wall": 1750698229007720719,
+                        "monotonic": 39430227013
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 126619,
+                "rtt": 279631,
+                "send": 152926
+            },
+            "ipdv": {
+                "receive": -30056,
+                "rtt": -35873,
+                "send": -5817
+            }
+        },
+        {
+            "seqno": 3,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229107551016,
+                        "monotonic": 300743641
+                    },
+                    "send": {
+                        "wall": 1750698229107267640,
+                        "monotonic": 300460228
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229107427784,
+                        "monotonic": 39529934097
+                    },
+                    "send": {
+                        "wall": 1750698229107440090,
+                        "monotonic": 39529946370
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 110926,
+                "rtt": 271140,
+                "send": 160144
+            },
+            "ipdv": {
+                "receive": -15701,
+                "rtt": -8491,
+                "send": 7210
+            }
+        },
+        {
+            "seqno": 4,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229207500974,
+                        "monotonic": 400693638
+                    },
+                    "send": {
+                        "wall": 1750698229207071018,
+                        "monotonic": 400263641
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229207309708,
+                        "monotonic": 39629816060
+                    },
+                    "send": {
+                        "wall": 1750698229207324737,
+                        "monotonic": 39629831041
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 176237,
+                "rtt": 415016,
+                "send": 238690
+            },
+            "ipdv": {
+                "receive": 65326,
+                "rtt": 143876,
+                "send": 78550
+            }
+        },
+        {
+            "seqno": 5,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229307273271,
+                        "monotonic": 500465907
+                    },
+                    "send": {
+                        "wall": 1750698229306921681,
+                        "monotonic": 500114278
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229307134964,
+                        "monotonic": 39729641290
+                    },
+                    "send": {
+                        "wall": 1750698229307147319,
+                        "monotonic": 39729653608
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 125952,
+                "rtt": 339311,
+                "send": 213283
+            },
+            "ipdv": {
+                "receive": -50298,
+                "rtt": -75705,
+                "send": -25407
+            }
+        },
+        {
+            "seqno": 6,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229408039029,
+                        "monotonic": 601231638
+                    },
+                    "send": {
+                        "wall": 1750698229407788061,
+                        "monotonic": 600980642
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229407917116,
+                        "monotonic": 39830423414
+                    },
+                    "send": {
+                        "wall": 1750698229407926358,
+                        "monotonic": 39830432626
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 112671,
+                "rtt": 241784,
+                "send": 129055
+            },
+            "ipdv": {
+                "receive": -13287,
+                "rtt": -97527,
+                "send": -84240
+            }
+        },
+        {
+            "seqno": 7,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229507747900,
+                        "monotonic": 700940510
+                    },
+                    "send": {
+                        "wall": 1750698229507470684,
+                        "monotonic": 700663292
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229507645224,
+                        "monotonic": 39930151565
+                    },
+                    "send": {
+                        "wall": 1750698229507657422,
+                        "monotonic": 39930163716
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 90478,
+                "rtt": 265067,
+                "send": 174540
+            },
+            "ipdv": {
+                "receive": -22218,
+                "rtt": 23283,
+                "send": 45501
+            }
+        },
+        {
+            "seqno": 8,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229607415943,
+                        "monotonic": 800608590
+                    },
+                    "send": {
+                        "wall": 1750698229607108095,
+                        "monotonic": 800300702
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229607271491,
+                        "monotonic": 40029777830
+                    },
+                    "send": {
+                        "wall": 1750698229607283275,
+                        "monotonic": 40029789572
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 132668,
+                "rtt": 296146,
+                "send": 163396
+            },
+            "ipdv": {
+                "receive": 42224,
+                "rtt": 31079,
+                "send": -11145
+            }
+        },
+        {
+            "seqno": 9,
+            "lost": "false",
+            "timestamps": {
+                "client": {
+                    "receive": {
+                        "wall": 1750698229707043057,
+                        "monotonic": 900235706
+                    },
+                    "send": {
+                        "wall": 1750698229706761211,
+                        "monotonic": 899953819
+                    }
+                },
+                "server": {
+                    "receive": {
+                        "wall": 1750698229706921827,
+                        "monotonic": 40129428165
+                    },
+                    "send": {
+                        "wall": 1750698229706933329,
+                        "monotonic": 40129439623
+                    }
+                },
+                "Ecn": 0
+            },
+            "delay": {
+                "receive": 109728,
+                "rtt": 270429,
+                "send": 160616
+            },
+            "ipdv": {
+                "receive": -22935,
+                "rtt": -25717,
+                "send": -2782
+            }
+        }
+    ],
+    "udp_addr": {
+        "IP": "127.0.0.1",
+        "Port": 43613,
+        "Zone": ""
+    }
+}

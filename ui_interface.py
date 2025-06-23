@@ -1,7 +1,6 @@
 import streamlit as st
 import os
 import json
-import datetime
 import subprocess
 import matplotlib.pyplot as plt
 import statistics
@@ -17,16 +16,17 @@ duration = st.sidebar.text_input("Test Duration (e.g., 6s)", "6s")
 interval = st.sidebar.text_input("Send Interval (e.g., 100ms)", "100ms")
 packet_size = st.sidebar.text_input("Packet Size (bytes)", "100")
 output_file = st.sidebar.text_input("Output Filename (e.g., result.json)", "result.json")
-run_test = st.sidebar.button("▶️ Run Test")
+run_test = st.sidebar.button("▶️ Run Client Test")
+run_server = st.sidebar.button("🖥️ Run Server")  # New button
 
 # Ensure output directory exists
 os.makedirs("output", exist_ok=True)
 
-def run_nlmt(hosts, dur, inter, size, out_file):
+def run_nlmt_client(hosts, dur, inter, size, out_file):
     for host in hosts:
         host_clean = host.strip()
         cmd = [
-            "./script.sh",
+            "./script.sh", "nlmt_client",
             host_clean,
             dur,
             inter,
@@ -37,7 +37,16 @@ def run_nlmt(hosts, dur, inter, size, out_file):
         try:
             subprocess.run(cmd, check=True)
         except subprocess.CalledProcessError as e:
-            st.error(f"Test for {host_clean} failed: {e}")
+            st.error(f"Client test for {host_clean} failed: {e}")
+
+def run_nlmt_server():
+    cmd = ["./script.sh", "nlmt_server"]
+    st.code("Running: " + " ".join(cmd))
+    try:
+        subprocess.run(cmd, check=True)
+        st.success("✅ Server started successfully!")
+    except subprocess.CalledProcessError as e:
+        st.error(f"❌ Failed to start server: {e}")
 
 def analyze_and_plot(data, host):
     st.subheader(f"📊 Results for `{host}`")
@@ -47,7 +56,6 @@ def analyze_and_plot(data, host):
         st.warning("No data found in `round_trips`.")
         return
 
-    # Extract RTT delay in milliseconds
     delays_ms = [entry["delay"]["rtt"] / 1e6 for entry in round_trips if "delay" in entry and entry["delay"].get("rtt") is not None]
     seqnos = [entry["seqno"] for entry in round_trips if "delay" in entry and entry["delay"].get("rtt") is not None]
 
@@ -55,7 +63,6 @@ def analyze_and_plot(data, host):
         st.warning("No valid RTT delays found in data.")
         return
 
-    # Plot RTT delay graph
     fig, ax = plt.subplots()
     ax.plot(seqnos, delays_ms, marker='o', color='mediumseagreen')
     ax.set_title("📈 Round-Trip Delay Over Sequence Number")
@@ -63,7 +70,6 @@ def analyze_and_plot(data, host):
     ax.set_ylabel("RTT Delay (ms)")
     st.pyplot(fig)
 
-    # Show statistical summary
     st.markdown("#### 📋 Summary")
     st.write({
         "Min RTT (ms)": round(min(delays_ms), 2),
@@ -73,12 +79,12 @@ def analyze_and_plot(data, host):
         "Total Packets": len(delays_ms)
     })
 
-# Run test
+# Handle client test
 if run_test:
-    st.info("Test started...")
+    st.info("🚀 Starting client test...")
     hosts = [h.strip() for h in target_hosts.split(",")]
-    run_nlmt(hosts, duration, interval, packet_size, output_file)
-    st.success("✅ Test completed!")
+    run_nlmt_client(hosts, duration, interval, packet_size, output_file)
+    st.success("✅ Client test completed!")
 
     try:
         with open(f"output/{output_file}", "r") as f:
@@ -86,6 +92,11 @@ if run_test:
             analyze_and_plot(result_data, hosts[0])
     except Exception as e:
         st.error(f"Error reading result file: {e}")
+
+# Handle server start
+if run_server:
+    st.info("🖥️ Starting NLMT server...")
+    run_nlmt_server()
 
 # Upload past result
 st.markdown("---")
@@ -98,3 +109,4 @@ if uploaded_file:
         analyze_and_plot(data, host_name)
     except Exception as e:
         st.error(f"Error loading file: {e}")
+
