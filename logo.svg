@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="100px" viewBox="0 0 200 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>NetTester Logo</title>
+    
+    <!-- 
+        Logo for NetTester
+        Concept: Speedometer Scan
+        Colors:
+        - Tech Blue: #2A65C3
+        - Performance Green: #30B85A
+        - Text Gray: #333333
+        Font: Montserrat
+    -->
+    
+    <g id="NetTester-Logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        
+        <!-- Icon Group -->
+        <g id="Icon-Group" transform="translate(50, 50) translate(-50, -45)">
+            <!-- Gauge Arc (Represents nmap scan area) -->
+            <path d="M 15,65 A 40,40 0 1,1 85,65" 
+                  id="Gauge-Arc"
+                  stroke="#2A65C3" 
+                  stroke-width="10" 
+                  stroke-linecap="round" 
+                  fill="none"/>
+            
+            <!-- Needle / Radar Sweep (Represents iperf performance) -->
+            <path d="M 68,23 A 25,25 0 0,1 80,42" 
+                  id="Radar-Sweep-Needle"
+                  stroke="#30B85A" 
+                  stroke-width="10" 
+                  stroke-linecap="round" 
+                  fill="none"/>
+        </g>
+        
+        <!-- Text Group -->
+        <g id="Text-Group" transform="translate(100, 85)">
+            <text font-family="Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" 
+                  font-size="20" 
+                  fill="#333333" 
+                  text-anchor="middle">
+                  
+                <tspan font-weight="bold">Net</tspan>
+                <tspan font-weight="normal">Tester</tspan>
+            </text>
+        </g>
+        
+    </g>
+</svg>

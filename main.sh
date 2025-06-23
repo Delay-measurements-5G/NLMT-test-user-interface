@@ -17,10 +17,10 @@ mkdir -p "$(dirname "$DESKTOP_FILE")"
 
 cat > "$DESKTOP_FILE" << EOF
 [Desktop Entry]
-Name=Interface UI
+Name=NetTester
 Comment=Launch the Streamlit UI Interface
 Exec=bash -c "cd $(pwd)/nmat && source nlmt_env/bin/activate && cd .. && streamlit run ui_interface.py"
-Icon=utilities-terminal
+Icon=$(pwd)/logo.svg
 Terminal=true
 Type=Application
 Categories=Utility;
