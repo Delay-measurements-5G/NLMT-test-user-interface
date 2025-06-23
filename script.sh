@@ -47,6 +47,23 @@ nlmt_server() {
   deactivate
 }
 
+
+iperf_server() {
+  BASE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+  NMAT_DIR="$BASE_DIR/nmat"
+
+  cd "$NMAT_DIR/nlmt" || { echo "❌ Cannot cd to nlmt directory"; exit 1; }
+
+  source ../nlmt_env/bin/activate
+
+  echo "🖥️ Starting iperf server..."
+
+  iperf3 -s
+
+  deactivate
+}
+
+
 # ---------- Command Dispatcher ----------
 
 COMMAND=$1
@@ -63,10 +80,14 @@ case "$COMMAND" in
   nlmt_server)
     nlmt_server
     ;;
+  iperf_server)
+    iperf_server
+    ;;
   *)
     echo "Usage:"
     echo "  $0 nlmt_client <HOST> <DURATION> <INTERVAL> <SIZE> <OUTPUT_FILE>"
     echo "  $0 nlmt_server"
+    echo "  $0 iperf_server"
     ;;
 esac
 
