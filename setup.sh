@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "📁 Creating 'nmat' folder..."
+echo "Creating 'nmat' folder..."
 mkdir -p nmat
 cd nmat
 
@@ -13,6 +13,10 @@ python3 -m venv nlmt_env
 
 echo "🧪 Activating virtual environment..."
 source nlmt_env/bin/activate
+
+echo "installing iperf3"
+sudo apt install iperf3
+echo "sucessfully installed iperf3"
 
 echo "📥 Cloning NLMT repository into ./nmat/nlmt ..."
 git clone https://github.com/samiemostafavi/nlmt.git
