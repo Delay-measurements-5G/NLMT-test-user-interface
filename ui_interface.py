@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import statistics
 
 st.set_page_config("📡 5G Test Automation Dashboard", layout="wide")
-st.title("📡 5G Network Test Automation Interface")
+st.title("📡 5G Network Testing Automation Interface")
 st.markdown("Choose between running **NLMT** or **iPerf** for analyzing network performance.")
 
 # Mode selection
