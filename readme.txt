@@ -1,4 +1,4 @@
-🚀 Network Performance Automation Tool
+**🚀 Network Performance Automation Tool**
 This project automates network performance testing using NLMT/iPerf, providing structured test execution, real-time monitoring, and detailed reports. Designed for telecom-grade 4G/5G evaluation or basic network checks depending on the selected mode.
 
 📌 Features
