@@ -30,3 +30,5 @@ chmod +x "$DESKTOP_FILE"
 
 echo "✅ Desktop shortcut created at: $DESKTOP_FILE"
 
+#V1.2.1
+

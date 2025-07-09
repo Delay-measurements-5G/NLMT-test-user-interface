@@ -46,3 +46,6 @@ echo ""
 echo "👉 To run the app:"
 echo "   source nmat/nlmt_env/bin/activate"
 echo "   streamlit run nlmt/ui_interface.py"
+
+
+#V1.2.1
