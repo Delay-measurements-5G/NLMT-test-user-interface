@@ -33,7 +33,7 @@ iperf_server() {
 
   # Start iperf3 in the background, redirecting all output to a log file.
   # 'nohup' ensures it keeps running even if the script's shell is closed.
-  nohup iperf3 -s > "$LOG_FILE" 2>&1 &
+  nohup iperf3 -s -B 0.0.0.0 > "$LOG_FILE" 2>&1 &
 
   # Capture the Process ID (PID) of the background job and save it.
   local PID=$!
